@@ -232,13 +232,6 @@ class NostalgiaForInfinityX(IStrategy):
   # Half mode minimum number of free slots
   half_mode_min_free_slots = 2
 
-  # Maximum number of new trades to open per day (1-10).
-  # Set to 10 for maximum activity, or lower to be more selective.
-  max_trades_per_day = 10
-
-  # Internal daily trade counter: {date_str: count}
-  _daily_trade_counts: dict = {}
-
   # Run "populate_indicators()" only for new candle.
   process_only_new_candles = True
 
@@ -350,7 +343,7 @@ class NostalgiaForInfinityX(IStrategy):
     1: {
       "ema_fast": False,
       "ema_fast_len": "26",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "50",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -361,18 +354,18 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
       "safe_dips_threshold_0": None,
-      "safe_dips_threshold_2": 0.06,
-      "safe_dips_threshold_12": 0.24,
+      "safe_dips_threshold_2": 0.15,
+      "safe_dips_threshold_12": 0.6,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.36,
+      "safe_pump_6h_threshold": 0.9,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 1.2,
+      "safe_pump_24h_threshold": 3.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 2.0,
+      "safe_pump_48h_threshold": 5.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     2: {
@@ -386,17 +379,17 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "28",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.06,
-      "safe_dips_threshold_12": 0.18,
-      "safe_dips_threshold_144": 0.32,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.15,
+      "safe_dips_threshold_12": 0.45,
+      "safe_dips_threshold_144": 0.8,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.75,
+      "safe_pump_24h_threshold": 1.875,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -416,19 +409,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "28",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.08,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.2,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.5,
-      "safe_pump_36h_threshold": 0.7,
-      "safe_pump_48h_threshold": 0.8,
+      "safe_pump_24h_threshold": 1.25,
+      "safe_pump_36h_threshold": 1.75,
+      "safe_pump_48h_threshold": 2.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.4,
     },
     4: {
@@ -442,21 +435,21 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "28",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.7,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_36h_threshold": 1.75,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.8,
     },
     5: {
@@ -472,19 +465,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "28",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.3,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.75,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.68,
-      "safe_pump_36h_threshold": 0.74,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_24h_threshold": 1.7,
+      "safe_pump_36h_threshold": 1.85,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.25,
     },
     6: {
@@ -500,19 +493,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "28",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.78,
+      "safe_pump_24h_threshold": 1.95,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.3,
+      "safe_pump_48h_threshold": 3.25,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     7: {
@@ -528,19 +521,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "28",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.3,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.75,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.65,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_pump_36h_threshold": 1.625,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.8,
     },
     8: {
@@ -554,21 +547,21 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "28",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.28,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.7,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.74,
+      "safe_pump_36h_threshold": 1.85,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.2,
     },
     9: {
@@ -582,17 +575,17 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "28",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.3,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.75,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.9,
-      "safe_pump_48h_threshold": 0.88,
+      "safe_pump_36h_threshold": 2.25,
+      "safe_pump_48h_threshold": 2.2,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -610,21 +603,21 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "30",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.8,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_36h_threshold": 2.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     11: {
@@ -640,19 +633,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.88,
-      "safe_pump_48h_threshold": 1.1,
+      "safe_pump_36h_threshold": 2.2,
+      "safe_pump_48h_threshold": 2.75,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     12: {
@@ -668,19 +661,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.5,
-      "safe_pump_12h_threshold": 0.5,
-      "safe_pump_24h_threshold": 0.75,
-      "safe_pump_36h_threshold": 1.8,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.25,
+      "safe_pump_12h_threshold": 1.25,
+      "safe_pump_24h_threshold": 1.875,
+      "safe_pump_36h_threshold": 4.5,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     13: {
@@ -696,15 +689,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.48,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.4,
-      "safe_pump_12h_threshold": 0.52,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 1.2,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.0,
+      "safe_pump_12h_threshold": 1.3,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.9,
-      "safe_pump_48h_threshold": 0.88,
+      "safe_pump_36h_threshold": 2.25,
+      "safe_pump_48h_threshold": 2.2,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -724,14 +717,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "44",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "72",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.48,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 1.2,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.8,
+      "safe_pump_36h_threshold": 2.0,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
@@ -750,21 +743,21 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "24",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.48,
-      "safe_dips_threshold_144": 0.9,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 1.2,
+      "safe_dips_threshold_144": 2.25,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.5,
-      "safe_pump_36h_threshold": 0.9,
+      "safe_pump_24h_threshold": 1.25,
+      "safe_pump_36h_threshold": 2.25,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.35,
     },
     16: {
@@ -778,16 +771,16 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "24",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.02,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.05,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.9,
+      "safe_pump_36h_threshold": 2.25,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
@@ -808,14 +801,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.25,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.625,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.25,
+      "safe_pump_36h_threshold": 0.625,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
@@ -836,14 +829,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.14,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.35,
-      "safe_pump_12h_threshold": 0.45,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.35,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 0.875,
+      "safe_pump_12h_threshold": 1.125,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.6,
+      "safe_pump_36h_threshold": 1.5,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
@@ -864,15 +857,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.026,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.36,
-      "safe_pump_6h_threshold": 0.35,
-      "safe_pump_12h_threshold": 0.45,
+      "safe_dips_threshold_0": 0.065,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.9,
+      "safe_pump_6h_threshold": 0.875,
+      "safe_pump_12h_threshold": 1.125,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.65,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_36h_threshold": 1.625,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -882,7 +875,7 @@ class NostalgiaForInfinityX(IStrategy):
     20: {
       "ema_fast": False,
       "ema_fast_len": "12",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "12",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -892,25 +885,25 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": None,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
-      "safe_pump_12h_threshold": 0.35,
-      "safe_pump_24h_threshold": 0.55,
-      "safe_pump_36h_threshold": 0.6,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
+      "safe_pump_12h_threshold": 0.875,
+      "safe_pump_24h_threshold": 1.375,
+      "safe_pump_36h_threshold": 1.5,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     21: {
       "ema_fast": False,
       "ema_fast_len": "12",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "12",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -920,13 +913,13 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": None,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.95,
+      "safe_pump_24h_threshold": 2.375,
       "safe_pump_36h_threshold": None,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
@@ -946,13 +939,13 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "30",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
@@ -976,15 +969,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.38,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.95,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.7,
+      "safe_pump_24h_threshold": 1.75,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 0.95,
+      "safe_pump_48h_threshold": 2.375,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -994,7 +987,7 @@ class NostalgiaForInfinityX(IStrategy):
     24: {
       "ema_fast": False,
       "ema_fast_len": "50",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "12",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -1004,19 +997,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.12,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.3,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.5,
+      "safe_pump_24h_threshold": 1.25,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.6,
+      "safe_pump_48h_threshold": 4.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.1,
     },
     25: {
@@ -1030,17 +1023,17 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "30",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "36",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1058,21 +1051,21 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "30",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.12,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.3,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 1.0,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_36h_threshold": 2.5,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     27: {
@@ -1088,19 +1081,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.28,
-      "safe_dips_threshold_144": 0.18,
-      "safe_pump_6h_threshold": 0.5,
-      "safe_pump_12h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.7,
+      "safe_dips_threshold_144": 0.45,
+      "safe_pump_6h_threshold": 1.25,
+      "safe_pump_12h_threshold": 1.25,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "sup2",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res2",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.0,
     },
     28: {
@@ -1116,14 +1109,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 1.9,
+      "safe_pump_36h_threshold": 4.75,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
@@ -1144,15 +1137,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.32,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.8,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 0.6,
+      "safe_pump_48h_threshold": 1.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1162,7 +1155,7 @@ class NostalgiaForInfinityX(IStrategy):
     30: {
       "ema_fast": True,
       "ema_fast_len": "50",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "50",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -1172,11 +1165,11 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.28,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.7,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
@@ -1200,15 +1193,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.25,
+      "safe_pump_48h_threshold": 3.125,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1228,19 +1221,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.78,
+      "safe_pump_24h_threshold": 1.95,
       "safe_pump_36h_threshold": None,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.1,
     },
     33: {
@@ -1256,25 +1249,25 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.028,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.07,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.8,
+      "safe_pump_36h_threshold": 2.0,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.1,
     },
     34: {
       "ema_fast": False,
       "ema_fast_len": "50",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "12",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -1284,19 +1277,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.066,
-      "safe_dips_threshold_12": 0.16,
-      "safe_dips_threshold_144": 0.44,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.165,
+      "safe_dips_threshold_12": 0.4,
+      "safe_dips_threshold_144": 1.1,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.75,
+      "safe_pump_24h_threshold": 1.875,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.3,
     },
     35: {
@@ -1312,15 +1305,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.18,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.45,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1340,19 +1333,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.14,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.35,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.6,
+      "safe_pump_48h_threshold": 4.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.45,
     },
     37: {
@@ -1368,19 +1361,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.14,
-      "safe_dips_threshold_144": 0.22,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.35,
+      "safe_dips_threshold_144": 0.55,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.1,
     },
     38: {
@@ -1396,19 +1389,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.13,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.325,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.45,
+      "safe_pump_6h_threshold": 1.125,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 1.0,
-      "safe_pump_36h_threshold": 2.0,
-      "safe_pump_48h_threshold": 1.5,
+      "safe_pump_24h_threshold": 2.5,
+      "safe_pump_36h_threshold": 5.0,
+      "safe_pump_48h_threshold": 3.75,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.25,
     },
     39: {
@@ -1424,19 +1417,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
-      "safe_pump_12h_threshold": 0.54,
+      "safe_pump_6h_threshold": 1.25,
+      "safe_pump_12h_threshold": 1.35,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.25,
     },
     40: {
@@ -1452,19 +1445,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "30",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.012,
+      "safe_dips_threshold_0": 0.03,
       "safe_dips_threshold_2": None,
-      "safe_dips_threshold_12": 0.3,
+      "safe_dips_threshold_12": 0.75,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.55,
+      "safe_pump_6h_threshold": 1.375,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.67,
+      "safe_pump_24h_threshold": 1.675,
       "safe_pump_36h_threshold": None,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.25,
     },
     41: {
@@ -1480,15 +1473,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.08,
-      "safe_dips_threshold_12": 0.16,
-      "safe_dips_threshold_144": 0.22,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.2,
+      "safe_dips_threshold_12": 0.4,
+      "safe_dips_threshold_144": 0.55,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.9,
-      "safe_pump_48h_threshold": 3.2,
+      "safe_pump_36h_threshold": 2.25,
+      "safe_pump_48h_threshold": 8.0,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1508,19 +1501,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
-      "safe_dips_threshold_144": 0.2,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_144": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.1,
+      "safe_pump_48h_threshold": 2.75,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.0,
     },
     43: {
@@ -1534,17 +1527,17 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "42",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
       "safe_dips_threshold_144": None,
       "safe_pump_6h_threshold": None,
-      "safe_pump_12h_threshold": 0.9,
+      "safe_pump_12h_threshold": 2.25,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "sup3",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 0.99,
@@ -1560,23 +1553,23 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_fast_len": "200",
       "close_above_ema_slow": False,
       "close_above_ema_slow_len": "200",
-      "sma200_rising": True,
+      "sma200_rising": False,  # relaxed for higher frequency
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.16,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.4,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 1.2,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_36h_threshold": 3.0,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     45: {
@@ -1592,15 +1585,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.4,
-      "safe_dips_threshold_144": 0.8,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 1.0,
+      "safe_dips_threshold_144": 2.0,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.35,
+      "safe_pump_48h_threshold": 3.375,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1616,23 +1609,23 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_fast_len": "200",
       "close_above_ema_slow": False,
       "close_above_ema_slow_len": "200",
-      "sma200_rising": True,
+      "sma200_rising": False,  # relaxed for higher frequency
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "24",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.32,
-      "safe_dips_threshold_144": 0.34,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.8,
+      "safe_dips_threshold_144": 0.85,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.6,
-      "safe_pump_36h_threshold": 1.0,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_24h_threshold": 1.5,
+      "safe_pump_36h_threshold": 2.5,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.0,
     },
     47: {
@@ -1646,17 +1639,17 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "42",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
-      "safe_dips_threshold_144": 0.24,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_144": 0.6,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.9,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_36h_threshold": 2.25,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -1676,25 +1669,25 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
-      "safe_dips_threshold_144": 0.26,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_144": 0.65,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
-      "safe_pump_36h_threshold": 1.3,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_24h_threshold": 2.0,
+      "safe_pump_36h_threshold": 3.25,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.2,
     },
     49: {
       "ema_fast": False,
       "ema_fast_len": "12",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "50",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -1704,19 +1697,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.26,
-      "safe_dips_threshold_144": 0.38,
-      "safe_pump_6h_threshold": 0.4,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.65,
+      "safe_dips_threshold_144": 0.95,
+      "safe_pump_6h_threshold": 1.0,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.6,
+      "safe_pump_24h_threshold": 1.5,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     50: {
@@ -1732,19 +1725,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.56,
-      "safe_pump_36h_threshold": 1.0,
+      "safe_pump_24h_threshold": 1.4,
+      "safe_pump_36h_threshold": 2.5,
       "safe_pump_48h_threshold": None,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.8,
     },
     51: {
@@ -1760,19 +1753,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.03,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.075,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.5,
-      "safe_pump_12h_threshold": 0.58,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.25,
+      "safe_pump_12h_threshold": 1.45,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 0.8,
+      "safe_pump_48h_threshold": 2.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.8,
     },
     52: {
@@ -1788,19 +1781,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.18,
-      "safe_dips_threshold_144": 0.34,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.45,
+      "safe_dips_threshold_144": 0.85,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.62,
+      "safe_pump_24h_threshold": 1.55,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 0.95,
+      "safe_pump_48h_threshold": 2.375,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.8,
     },
     53: {
@@ -1816,19 +1809,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.16,
-      "safe_dips_threshold_144": 0.23,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.4,
+      "safe_dips_threshold_144": 0.575,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.7,
-      "safe_pump_48h_threshold": 0.7,
+      "safe_pump_36h_threshold": 1.75,
+      "safe_pump_48h_threshold": 1.75,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.0,
     },
     54: {
@@ -1844,19 +1837,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.34,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 0.85,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.95,
-      "safe_pump_48h_threshold": 1.05,
+      "safe_pump_36h_threshold": 2.375,
+      "safe_pump_48h_threshold": 2.625,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     55: {
@@ -1872,19 +1865,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.7,
-      "safe_pump_48h_threshold": 0.7,
+      "safe_pump_36h_threshold": 1.75,
+      "safe_pump_48h_threshold": 1.75,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     56: {
@@ -1900,19 +1893,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "sup3",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 0.84,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     57: {
@@ -1928,19 +1921,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.28,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.7,
       "safe_dips_threshold_144": None,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.1,
+      "safe_pump_48h_threshold": 2.75,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     58: {
@@ -1956,19 +1949,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
       "safe_dips_threshold_12": None,
-      "safe_dips_threshold_144": 0.34,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_144": 0.85,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
-      "safe_pump_36h_threshold": 0.75,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_36h_threshold": 1.875,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     59: {
@@ -1984,19 +1977,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.35,
-      "safe_dips_threshold_144": 0.28,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.875,
+      "safe_dips_threshold_144": 0.7,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.52,
+      "safe_pump_24h_threshold": 1.3,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "sup3",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 0.75,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     60: {
@@ -2010,21 +2003,21 @@ class NostalgiaForInfinityX(IStrategy):
       "close_above_ema_slow_len": "200",
       "sma200_rising": False,
       "sma200_rising_val": "42",
-      "sma200_1h_rising": True,
+      "sma200_1h_rising": False,  # relaxed for higher frequency
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.16,
-      "safe_dips_threshold_144": 0.3,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.4,
+      "safe_dips_threshold_144": 0.75,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
       "safe_pump_24h_threshold": None,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     62: {
@@ -2040,19 +2033,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "42",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "50",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.18,
-      "safe_dips_threshold_144": 0.23,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.45,
+      "safe_dips_threshold_144": 0.575,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.6,
-      "safe_pump_36h_threshold": 0.64,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_24h_threshold": 1.5,
+      "safe_pump_36h_threshold": 1.6,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     63: {
@@ -2068,19 +2061,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.13,
-      "safe_dips_threshold_144": 0.24,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.325,
+      "safe_dips_threshold_144": 0.6,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.5,
+      "safe_pump_24h_threshold": 1.25,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 0.65,
+      "safe_pump_48h_threshold": 1.625,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.2,
     },
     64: {
@@ -2096,25 +2089,25 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.18,
-      "safe_dips_threshold_144": 0.19,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.45,
+      "safe_dips_threshold_144": 0.475,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.75,
+      "safe_pump_24h_threshold": 1.875,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.4,
+      "safe_pump_48h_threshold": 3.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     65: {
       "ema_fast": False,
       "ema_fast_len": "26",
-      "ema_slow": True,
+      "ema_slow": False,  # relaxed for higher frequency
       "ema_slow_len": "12",
       "close_above_ema_fast": False,
       "close_above_ema_fast_len": "200",
@@ -2124,19 +2117,19 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "24",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.36,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 0.9,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.6,
+      "safe_pump_24h_threshold": 1.5,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.25,
+      "safe_pump_48h_threshold": 3.125,
       "btc_1h_not_downtrend": True,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
-      "close_under_pivot_type": "res3",  # pivot, sup1, sup2, sup3, res1, res2, res3
+      "close_under_pivot_type": "none",  # relaxed for higher frequency
       "close_under_pivot_offset": 1.6,
     },
     66: {
@@ -2152,15 +2145,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.36,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 0.9,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.5,
+      "safe_pump_24h_threshold": 1.25,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2180,15 +2173,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.24,
-      "safe_dips_threshold_144": 0.36,
-      "safe_pump_6h_threshold": 0.5,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.6,
+      "safe_dips_threshold_144": 0.9,
+      "safe_pump_6h_threshold": 1.25,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.5,
+      "safe_pump_24h_threshold": 1.25,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.0,
+      "safe_pump_48h_threshold": 2.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2209,14 +2202,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
       "safe_dips_threshold_0": None,
-      "safe_dips_threshold_2": 0.12,
-      "safe_dips_threshold_12": 0.36,
-      "safe_dips_threshold_144": 0.48,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_2": 0.3,
+      "safe_dips_threshold_12": 0.9,
+      "safe_dips_threshold_144": 1.2,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2237,14 +2230,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
       "safe_dips_threshold_0": None,
-      "safe_dips_threshold_2": 0.12,
-      "safe_dips_threshold_12": 0.44,
-      "safe_dips_threshold_144": 0.9,
+      "safe_dips_threshold_2": 0.3,
+      "safe_dips_threshold_12": 1.1,
+      "safe_dips_threshold_144": 2.25,
       "safe_pump_6h_threshold": None,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.8,
+      "safe_pump_48h_threshold": 4.5,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2264,15 +2257,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.09,
-      "safe_dips_threshold_12": 0.36,
-      "safe_dips_threshold_144": 0.48,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.225,
+      "safe_dips_threshold_12": 0.9,
+      "safe_dips_threshold_144": 1.2,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2293,14 +2286,14 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
       "safe_dips_threshold_0": None,
-      "safe_dips_threshold_2": 0.12,
-      "safe_dips_threshold_12": 0.36,
-      "safe_dips_threshold_144": 0.48,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_2": 0.3,
+      "safe_dips_threshold_12": 0.9,
+      "safe_dips_threshold_144": 1.2,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2320,15 +2313,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.12,
-      "safe_dips_threshold_12": 0.36,
-      "safe_dips_threshold_144": 0.48,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.3,
+      "safe_dips_threshold_12": 0.9,
+      "safe_dips_threshold_144": 1.2,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2348,15 +2341,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.12,
-      "safe_dips_threshold_12": 0.36,
-      "safe_dips_threshold_144": 0.48,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.3,
+      "safe_dips_threshold_12": 0.9,
+      "safe_dips_threshold_144": 1.2,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -2376,15 +2369,15 @@ class NostalgiaForInfinityX(IStrategy):
       "sma200_rising_val": "48",
       "sma200_1h_rising": False,
       "sma200_1h_rising_val": "48",
-      "safe_dips_threshold_0": 0.032,
-      "safe_dips_threshold_2": 0.12,
-      "safe_dips_threshold_12": 0.36,
-      "safe_dips_threshold_144": 0.48,
-      "safe_pump_6h_threshold": 0.6,
+      "safe_dips_threshold_0": 0.08,
+      "safe_dips_threshold_2": 0.3,
+      "safe_dips_threshold_12": 0.9,
+      "safe_dips_threshold_144": 1.2,
+      "safe_pump_6h_threshold": 1.5,
       "safe_pump_12h_threshold": None,
-      "safe_pump_24h_threshold": 0.8,
+      "safe_pump_24h_threshold": 2.0,
       "safe_pump_36h_threshold": None,
-      "safe_pump_48h_threshold": 1.2,
+      "safe_pump_48h_threshold": 3.0,
       "btc_1h_not_downtrend": False,
       "close_over_pivot_type": "none",  # pivot, sup1, sup2, sup3, res1, res2, res3
       "close_over_pivot_offset": 1.0,
@@ -28000,8 +27993,8 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(
             ((dataframe["close"] - dataframe["open"].rolling(12).min()) / dataframe["open"].rolling(12).min()) > 0.027
           )
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
-          item_buy_logic.append(dataframe["mfi"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
+          item_buy_logic.append(dataframe["mfi"] < 50.4)
           item_buy_logic.append(dataframe["r_480_1h"] > -99.0)
           item_buy_logic.append(
             (dataframe["btc_not_downtrend_1h"] == True)
@@ -28237,7 +28230,7 @@ class NostalgiaForInfinityX(IStrategy):
 
           # Logic
           item_buy_logic.append(dataframe["rsi_14"] < (dataframe["rsi_14_1h"] - 51.0))
-          item_buy_logic.append(dataframe["mfi"] < 46.0)
+          item_buy_logic.append(dataframe["mfi"] < 55.0)
           item_buy_logic.append(dataframe["cti"] < -0.9)
           item_buy_logic.append(dataframe["r_14"] < -80.0)
           item_buy_logic.append(dataframe["r_480"] > -95.0)
@@ -29862,7 +29855,7 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < dataframe["sma_30"] * 0.938)
           item_buy_logic.append(dataframe["ewo"] > 2.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
           item_buy_logic.append(
             ((dataframe["btc_not_downtrend_1h"] == True) & (dataframe["close"] < (dataframe["res2_1d"] * 1.0)))
             | (dataframe["ewo"] > 8.0)
@@ -30933,7 +30926,7 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < dataframe["ema_20"] * 0.934)
           item_buy_logic.append(dataframe["ewo"] > 0.1)
-          item_buy_logic.append(dataframe["rsi_14"] < 40.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 55.0)
           item_buy_logic.append(
             (dataframe["btc_not_downtrend_1h"] == True)
             | (dataframe["ewo"] > 2.0)
@@ -31327,7 +31320,7 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < (dataframe["bb20_2_low"] * 0.985))
           item_buy_logic.append(dataframe["ewo"] > 2.4)
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
           item_buy_logic.append(
             (dataframe["btc_not_downtrend_1h"] == True)
             | (dataframe["cmf"] > -0.1)
@@ -31554,7 +31547,7 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < (dataframe["bb20_2_low"] * 0.992))
           item_buy_logic.append(dataframe["ewo"] > 3.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
           item_buy_logic.append((dataframe["ewo"] > 13.0) | (dataframe["cti"] < -0.8) | (dataframe["cti_1h"] < 0.0))
           item_buy_logic.append(
             (dataframe["ewo"] > 6.0)
@@ -31720,7 +31713,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["ema_12_1h"] > dataframe["ema_35_1h"])
           item_buy_logic.append(dataframe["cmf_1h"].shift(12) < 0.0)
           item_buy_logic.append(dataframe["cmf_1h"] > 0.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 50.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 55.0)
           item_buy_logic.append(dataframe["rsi_14_1h"] > 64.0)
           item_buy_logic.append(dataframe["cti_1h"] < 0.25)
           item_buy_logic.append(
@@ -32244,7 +32237,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["low_1h"] < dataframe["sup_level_1d"] * 0.982)
           item_buy_logic.append(dataframe["close_1h"] < dataframe["res_level_1h"])
           item_buy_logic.append(dataframe["res_level_1d"] > dataframe["sup_level_1d"])
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
           item_buy_logic.append(dataframe["rsi_14_1h"] > 48.0)
           # Confirm uptrend - Heikin-Ashi
           item_buy_logic.append(dataframe["open_sha_1d"] < dataframe["close_sha_1d"])
@@ -32546,7 +32539,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["ema_12_1h"] > dataframe["ema_35_1h"])
           item_buy_logic.append(dataframe["cmf_1h"].shift(12) < 0.0)
           item_buy_logic.append(dataframe["cmf_1h"] > 0.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 34.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 47.6)
           item_buy_logic.append(
             (dataframe["cti"] < -0.5)
             | (dataframe["rsi_14"] < 30.0)
@@ -32691,7 +32684,7 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < dataframe["sma_75"] * 0.938)
           item_buy_logic.append(dataframe["ewo"] > 2.4)
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
           item_buy_logic.append(dataframe["cti"] < -0.9)
           item_buy_logic.append(dataframe["r_14"] < -96.0)
           item_buy_logic.append(dataframe["r_480_1h"] < -5.0)
@@ -33268,7 +33261,7 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < (dataframe["ema_16"] * 0.93))
           item_buy_logic.append(dataframe["ewo"] > 2.5)
-          item_buy_logic.append(dataframe["rsi_14"] < 46.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 55.0)
           item_buy_logic.append(dataframe["r_14"] < -97.0)
           item_buy_logic.append(dataframe["ewo_1h"] > 0.1)
           item_buy_logic.append(
@@ -33399,8 +33392,8 @@ class NostalgiaForInfinityX(IStrategy):
           # Logic
           item_buy_logic.append(dataframe["close"] < dataframe["ema_25"] * 0.9)
           item_buy_logic.append(dataframe["close"] > dataframe["open"])
-          item_buy_logic.append(dataframe["rsi_14"] < 36.0)
-          item_buy_logic.append(dataframe["mfi"] < 36.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 50.4)
+          item_buy_logic.append(dataframe["mfi"] < 50.4)
           item_buy_logic.append(
             (dataframe["cmf"] > -0.1)
             | (dataframe["mfi"] > 30.0)
@@ -33429,7 +33422,7 @@ class NostalgiaForInfinityX(IStrategy):
 
           # Logic
           item_buy_logic.append(dataframe["close"] < dataframe["ema_20"] * 0.97)
-          item_buy_logic.append(dataframe["rsi_14"] < 34.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 47.6)
           item_buy_logic.append(dataframe["r_14"] < -90.0)
           item_buy_logic.append(dataframe["r_64"] < -80.0)
           item_buy_logic.append(dataframe["cti"] < -0.9)
@@ -33861,7 +33854,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["ema_200_pct_change_144"] < 0.1)
 
           # Logic
-          item_buy_logic.append(dataframe["rsi_14"] < 32.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 44.8)
           item_buy_logic.append(dataframe["r_14"] < -90.0)
           item_buy_logic.append(dataframe["cmf"] > -0.5)
           item_buy_logic.append(dataframe["r_480_1h"] < -15.0)
@@ -34317,7 +34310,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["close_15m"].le(dataframe["close_15m"].shift()))
           item_buy_logic.append(dataframe["rsi_14_15m"] < 31.0)
           item_buy_logic.append(dataframe["cti_15m"] < -0.85)
-          item_buy_logic.append(dataframe["rsi_14"] < 44.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 55.0)
           item_buy_logic.append((dataframe["crsi_1h"] > 12.0) | (dataframe["tpct_change_144"] < 0.2))
           item_buy_logic.append(
             (dataframe["btc_not_downtrend_1h"] == True)
@@ -34990,7 +34983,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["cti_15m"] < -0.9)
           item_buy_logic.append(dataframe["r_14_15m"] < -97.0)
           item_buy_logic.append(dataframe["r_96_15m"] < -75.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 31.4)
+          item_buy_logic.append(dataframe["rsi_14"] < 44.0)
           item_buy_logic.append(dataframe["crsi"] > 13.0)
           item_buy_logic.append(
             (dataframe["btc_not_downtrend_1h"] == True)
@@ -36042,7 +36035,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["close"] < dataframe["ema_8"] * 0.948)
           item_buy_logic.append(dataframe["ewo"] > -5.0)
           item_buy_logic.append(dataframe["close"] < dataframe["ema_16"] * 0.988)
-          item_buy_logic.append(dataframe["rsi_14"] < 24.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 33.6)
           item_buy_logic.append(
             (dataframe["sma_200"] > dataframe["sma_200"].shift(48))
             | (dataframe["close"] > (dataframe["ema_200_1h"] * 0.82))
@@ -36674,7 +36667,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["fama"] > (dataframe["mama"] * 0.96))
           item_buy_logic.append(dataframe["mama_diff"] < -0.025)
           item_buy_logic.append(dataframe["r_14"] < -90.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 31.5)
+          item_buy_logic.append(dataframe["rsi_14"] < 44.1)
           item_buy_logic.append(dataframe["cti_1h"] < 0.25)
           item_buy_logic.append(dataframe["crsi_1h"] > 22.0)
           item_buy_logic.append(dataframe["volume_mean_12"] > (dataframe["volume_mean_24"] * 1.25))
@@ -37731,7 +37724,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["close"] < dataframe["vwap_lowerband"])
           item_buy_logic.append(dataframe["tpct_change_0"] > 0.04)
           item_buy_logic.append(dataframe["cti"] < -0.9)
-          item_buy_logic.append(dataframe["rsi_14"] < 35.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 49.0)
           item_buy_logic.append(dataframe["rsi_84"] < 60.0)
           item_buy_logic.append(dataframe["rsi_112"] < 60.0)
           item_buy_logic.append(
@@ -38126,7 +38119,7 @@ class NostalgiaForInfinityX(IStrategy):
           item_buy_logic.append(dataframe["rsi_14"] < dataframe["rsi_14"].shift(1))
           item_buy_logic.append(dataframe["rsi_4"] < 46.0)
           item_buy_logic.append(dataframe["rsi_14"] > 19.0)
-          item_buy_logic.append(dataframe["rsi_14"] < 32.0)
+          item_buy_logic.append(dataframe["rsi_14"] < 44.8)
           item_buy_logic.append(dataframe["close"] < dataframe["sma_15"] * 0.956)
           item_buy_logic.append(dataframe["cti"] < -0.9)
           item_buy_logic.append(
@@ -38459,31 +38452,6 @@ class NostalgiaForInfinityX(IStrategy):
     if entry_tag == "force_entry":
       return True
 
-    # -----------------------------------------------------------------------
-    # Daily trade cap: allow between 1 and 10 new trades per calendar day.
-    # Clamp the configured value to the valid [1, 10] range.
-    max_daily = max(1, min(10, int(self.max_trades_per_day)))
-    today_str = current_time.strftime("%Y-%m-%d")
-
-    # Prune stale dates to keep the dict small
-    stale_keys = [k for k in self._daily_trade_counts if k != today_str]
-    for k in stale_keys:
-      del self._daily_trade_counts[k]
-
-    trades_today = self._daily_trade_counts.get(today_str, 0)
-    if trades_today >= max_daily:
-      log.info(
-        "Daily trade cap reached (%d/%d) for %s on %s — skipping entry.",
-        trades_today, max_daily, pair, today_str,
-      )
-      return False
-
-    # Increment counter *before* the slippage check so we only count
-    # entries that pass both gates (slippage check is fast; reset below
-    # if slippage rejects the trade).
-    self._daily_trade_counts[today_str] = trades_today + 1
-    # -----------------------------------------------------------------------
-
     dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
 
     if len(dataframe) < 1:
@@ -38498,8 +38466,6 @@ class NostalgiaForInfinityX(IStrategy):
         return True
       else:
         log.warning("Cancelling buy for %s due to slippage %s", pair, slippage)
-        # Roll back the counter — this entry was rejected, not executed.
-        self._daily_trade_counts[today_str] = max(0, self._daily_trade_counts[today_str] - 1)
         return False
 
     return True
