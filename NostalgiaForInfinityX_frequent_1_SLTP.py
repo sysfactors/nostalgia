@@ -246,8 +246,7 @@ class NostalgiaForInfinityX(IStrategy):
 
   #############################################################
   # LEVERAGE (FUTURES ONLY)
-  def leverage(self, pair: str, current_time, current_rate,
-               proposed_leverage, max_leverage, side, **kwargs) -> float:
+  def leverage(self, pair: str, current_time, current_rate, proposed_leverage, max_leverage, side, **kwargs) -> float:
       return 20.0
   #############################################################
 
