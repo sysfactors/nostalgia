@@ -6,6 +6,7 @@ import freqtrade.vendor.qtpylib.indicators as qtpylib
 import numpy as np
 import talib.abstract as ta
 import pandas as pd
+pd.set_option('future.no_silent_downcasting', True)
 from freqtrade.strategy.interface import IStrategy
 from freqtrade.strategy import merge_informative_pair, timeframe_to_minutes
 from pandas import DataFrame, Series
