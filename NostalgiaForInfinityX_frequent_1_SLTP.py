@@ -124,11 +124,7 @@ class NostalgiaForInfinityX(IStrategy):
 
   # ROI table:
   minimal_roi = {
-    "0": 1.0,
-    "1": 3.0,
-    "2": 5.0,
-    "3": 15.0,
-    "4": 100.0,
+    "0": 100.0,
   }
 
   stoploss = -0.03
@@ -225,7 +221,7 @@ class NostalgiaForInfinityX(IStrategy):
   profit_max_enabled = True
 
   # Maximizer threshold
-  profit_max_threshold = 0.15
+  profit_max_threshold = 0.03
 
   # Rapid more tags
   rapid_mode_tags = ["66", "67", "68", "69", "70", "71", "72"]
@@ -241,8 +237,8 @@ class NostalgiaForInfinityX(IStrategy):
 
   # Exit options
   use_exit_signal = True
-  exit_profit_only = True
-  exit_profit_offset = 0.03
+  exit_profit_only = False
+  exit_profit_offset = 0.01
   ignore_roi_if_entry_signal = True
 
   # Number of candles the strategy requires before producing valid signals
