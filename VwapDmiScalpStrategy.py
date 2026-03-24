@@ -1,66 +1,69 @@
-# VwapDmiScalpStrategy.py
+# File: VwapDmiScalpStrategy.py
 from freqtrade.strategy.interface import IStrategy
 from pandas import DataFrame
 import talib.abstract as ta
 
+
 class VwapDmiScalpStrategy(IStrategy):
-    """
-    1m / 5m scalping strategy using VWAP + DMI with x20 leverage.
-    Increased trade frequency (~5x) by lowering thresholds.
-    """
-    # --- Strategy settings ---
-    timeframe = '1m'
-    minimal_roi = {"0": 0.015, "5": 0.01, "15": 0}
+    # --- STRATEGY SETTINGS ---
+    timeframe = '5m'
     stoploss = -0.03
-    trailing_stop = False
-    use_exit_signal = True
-    process_only_new_candles = True
+    minimal_roi = {"0": 0.02}  # take 2% profit immediately
     startup_candle_count: int = 20
-    leverage = 20  # futures leverage
+    leverage = 10  # futures leverage
 
-    # --- Leverage override for futures ---
-    def customize_leverage(self, pair: str, current_leverage: float, max_leverage: float) -> float:
-        return 20
+    # Use dynamic stake sizing to prevent 30% ignore issue
+    stake_amount = 50
+    stake_currency = 'USDT'
+    tradable_balance_ratio = 0.99
 
-    # --- Indicators ---
+    # Optional: limit number of trades
+    max_open_trades = 5
+
+    # --- INDICATORS ---
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # VWAP (simple moving average as proxy)
+        # VWAP
         dataframe['vwap'] = ta.SMA(dataframe['close'], timeperiod=14)
-        # DMI components
-        dataframe['adx'] = ta.ADX(dataframe, timeperiod=14)
-        dataframe['plus_di'] = ta.PLUS_DI(dataframe, timeperiod=14)
-        dataframe['minus_di'] = ta.MINUS_DI(dataframe, timeperiod=14)
+
+        # DMI
+        dataframe['plus_di'] = ta.PLUS_DI(dataframe)
+        dataframe['minus_di'] = ta.MINUS_DI(dataframe)
+        dataframe['adx'] = ta.ADX(dataframe)
+
         return dataframe
 
-    # --- Entry conditions ---
+    # --- ENTRY RULES ---
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        dataframe.loc[
+        dataframe['buy'] = 0
+        dataframe['sell'] = 0
+
+        # Buy: price above VWAP, ADX > 20, +DI > -DI
+        buy_condition = (
             (dataframe['close'] > dataframe['vwap']) &
             (dataframe['adx'] > 20) &
-            (dataframe['plus_di'] > dataframe['minus_di']),
-            'buy'
-        ] = 1
+            (dataframe['plus_di'] > dataframe['minus_di'])
+        )
+        dataframe.loc[buy_condition, 'buy'] = 1
 
-        dataframe.loc[
+        # Sell: price below VWAP, ADX > 20, -DI > +DI
+        sell_condition = (
             (dataframe['close'] < dataframe['vwap']) &
             (dataframe['adx'] > 20) &
-            (dataframe['minus_di'] > dataframe['plus_di']),
-            'sell'
-        ] = 1
+            (dataframe['minus_di'] > dataframe['plus_di'])
+        )
+        dataframe.loc[sell_condition, 'sell'] = 1
+
         return dataframe
 
-    # --- Exit conditions ---
+    # --- EXIT RULES ---
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # Exit when price crosses opposite side of VWAP or trend weakens
-        dataframe.loc[
-            (dataframe['close'] < dataframe['vwap']) &
-            (dataframe['plus_di'] < dataframe['minus_di']),
-            'sell'
-        ] = 1
+        dataframe['exit_long'] = 0
+        dataframe['exit_short'] = 0
 
-        dataframe.loc[
-            (dataframe['close'] > dataframe['vwap']) &
-            (dataframe['minus_di'] < dataframe['plus_di']),
-            'buy'
-        ] = 1
+        # Exit long when price drops below VWAP
+        dataframe.loc[dataframe['close'] < dataframe['vwap'], 'exit_long'] = 1
+
+        # Exit short when price rises above VWAP
+        dataframe.loc[dataframe['close'] > dataframe['vwap'], 'exit_short'] = 1
+
         return dataframe
