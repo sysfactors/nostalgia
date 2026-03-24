@@ -1,4 +1,4 @@
-# pragma pylint: disable=missing-docstring, invalid-name
+# pragma pylint: disable=missing-docstring, invalid-name, pointless-string-statement
 from freqtrade.strategy import IStrategy
 import pandas as pd
 import talib.abstract as ta
@@ -8,7 +8,7 @@ class VwapDmiScalpStrategy(IStrategy):
 
     INTERFACE_VERSION = 3
 
-    timeframe = '1m'   # switch to '5m' if too noisy
+    timeframe = '1m'  # change to '5m' if desired
     can_short = True
 
     minimal_roi = {
@@ -18,7 +18,6 @@ class VwapDmiScalpStrategy(IStrategy):
     }
 
     stoploss = -0.03
-
     use_custom_stoploss = True
     use_custom_exit = True
 
@@ -31,13 +30,15 @@ class VwapDmiScalpStrategy(IStrategy):
     vwap_window = 50          # faster VWAP
     rsi_entry = 35
 
+    # -----------------------------
+    # Indicators
+    # -----------------------------
     def populate_indicators(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
 
         # === FAST VWAP ===
         window = self.vwap_window
         tp = (dataframe['high'] + dataframe['low'] + dataframe['close']) / 3
         vol = dataframe['volume']
-
         dataframe['vwap'] = (tp * vol).rolling(window).sum() / vol.rolling(window).sum()
 
         # === DMI / ADX ===
@@ -51,21 +52,24 @@ class VwapDmiScalpStrategy(IStrategy):
         # === RSI (adds trade frequency) ===
         dataframe['rsi'] = ta.RSI(dataframe, timeperiod=14)
 
-        # === Momentum filter (simple) ===
+        # === EMA momentum filter ===
         dataframe['ema_fast'] = ta.EMA(dataframe, timeperiod=9)
         dataframe['ema_slow'] = ta.EMA(dataframe, timeperiod=21)
 
         return dataframe
 
+    # -----------------------------
+    # Entry signals
+    # -----------------------------
     def populate_entry_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
 
-        # === LONG (loosened conditions) ===
+        # === LONG (loosened for scalping) ===
         dataframe.loc[
             (
-                (dataframe['close'] > dataframe['vwap'] * 0.998) &  # zone, not strict cross
+                (dataframe['close'] > dataframe['vwap'] * 0.998) &
                 (dataframe['plus_di'] > dataframe['minus_di']) &
                 (dataframe['adx'] > self.adx_threshold) &
-                (dataframe['rsi'] < 55) &   # allows more entries
+                (dataframe['rsi'] < 55) &
                 (dataframe['ema_fast'] > dataframe['ema_slow'])
             ),
             'enter_long'] = 1
@@ -83,11 +87,25 @@ class VwapDmiScalpStrategy(IStrategy):
 
         return dataframe
 
+    # -----------------------------
+    # Exit trend (required for v2026+)
+    # -----------------------------
+    def populate_exit_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
+        """
+        Required by Freqtrade >=2025.
+        We're using custom_exit, so just return zeros.
+        """
+        dataframe['exit_long'] = 0
+        dataframe['exit_short'] = 0
+        return dataframe
+
+    # -----------------------------
+    # Custom stoploss
+    # -----------------------------
     def custom_stoploss(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
 
         dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
         candle = dataframe.iloc[-1]
-
         atr = candle['atr']
 
         if trade.is_short:
@@ -97,29 +115,28 @@ class VwapDmiScalpStrategy(IStrategy):
             stop_price = trade.open_rate - (self.atr_multiplier * atr)
             return (stop_price - current_rate) / current_rate
 
+    # -----------------------------
+    # Custom exit (TP + early exit for scalping)
+    # -----------------------------
     def custom_exit(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
 
         dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
         candle = dataframe.iloc[-1]
-
         atr = candle['atr']
 
-        # === TAKE PROFIT (faster RR) ===
+        # --- Take Profit based on RR ratio ---
         if trade.is_short:
             risk = (trade.open_rate + (self.atr_multiplier * atr)) - trade.open_rate
             target = trade.open_rate - (risk * self.rr_ratio)
-
             if current_rate <= target:
                 return "tp_hit"
-
         else:
             risk = trade.open_rate - (trade.open_rate - (self.atr_multiplier * atr))
             target = trade.open_rate + (risk * self.rr_ratio)
-
             if current_rate >= target:
                 return "tp_hit"
 
-        # === EARLY EXIT (key for scalping) ===
+        # --- Early exit (momentum flip) ---
         if current_profit > 0.005:  # ~0.5%
             if trade.is_short and candle['plus_di'] > candle['minus_di']:
                 return "momentum_flip"
