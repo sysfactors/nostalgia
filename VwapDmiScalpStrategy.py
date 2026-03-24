@@ -1,146 +1,66 @@
-# pragma pylint: disable=missing-docstring, invalid-name, pointless-string-statement
-from freqtrade.strategy import IStrategy
-import pandas as pd
+# VwapDmiScalpStrategy.py
+from freqtrade.strategy.interface import IStrategy
+from pandas import DataFrame
 import talib.abstract as ta
 
-
 class VwapDmiScalpStrategy(IStrategy):
-
-    INTERFACE_VERSION = 3
-
-    timeframe = '1m'  # change to '5m' if desired
-    can_short = True
-
-    minimal_roi = {
-        "0": 0.02,
-        "10": 0.01,
-        "30": 0
-    }
-
+    """
+    1m / 5m scalping strategy using VWAP + DMI with x20 leverage.
+    Increased trade frequency (~5x) by lowering thresholds.
+    """
+    # --- Strategy settings ---
+    timeframe = '1m'
+    minimal_roi = {"0": 0.015, "5": 0.01, "15": 0}
     stoploss = -0.03
-    use_custom_stoploss = True
-    use_custom_exit = True
+    trailing_stop = False
+    use_exit_signal = True
+    process_only_new_candles = True
+    startup_candle_count: int = 20
+    leverage = 20  # futures leverage
 
-    startup_candle_count = 200
+    # --- Leverage override for futures ---
+    def customize_leverage(self, pair: str, current_leverage: float, max_leverage: float) -> float:
+        return 20
 
-    # === SCALPING PARAMETERS ===
-    adx_threshold = 15        # lower = more trades
-    atr_multiplier = 1.2      # tighter SL
-    rr_ratio = 1.5            # faster TP
-    vwap_window = 50          # faster VWAP
-    rsi_entry = 35
-
-    # -----------------------------
-    # Indicators
-    # -----------------------------
-    def populate_indicators(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-
-        # === FAST VWAP ===
-        window = self.vwap_window
-        tp = (dataframe['high'] + dataframe['low'] + dataframe['close']) / 3
-        vol = dataframe['volume']
-        dataframe['vwap'] = (tp * vol).rolling(window).sum() / vol.rolling(window).sum()
-
-        # === DMI / ADX ===
+    # --- Indicators ---
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        # VWAP (simple moving average as proxy)
+        dataframe['vwap'] = ta.SMA(dataframe['close'], timeperiod=14)
+        # DMI components
         dataframe['adx'] = ta.ADX(dataframe, timeperiod=14)
         dataframe['plus_di'] = ta.PLUS_DI(dataframe, timeperiod=14)
         dataframe['minus_di'] = ta.MINUS_DI(dataframe, timeperiod=14)
-
-        # === ATR ===
-        dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
-
-        # === RSI (adds trade frequency) ===
-        dataframe['rsi'] = ta.RSI(dataframe, timeperiod=14)
-
-        # === EMA momentum filter ===
-        dataframe['ema_fast'] = ta.EMA(dataframe, timeperiod=9)
-        dataframe['ema_slow'] = ta.EMA(dataframe, timeperiod=21)
-
         return dataframe
 
-    # -----------------------------
-    # Entry signals
-    # -----------------------------
-    def populate_entry_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-
-        # === LONG (loosened for scalping) ===
+    # --- Entry conditions ---
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (
-                (dataframe['close'] > dataframe['vwap'] * 0.998) &
-                (dataframe['plus_di'] > dataframe['minus_di']) &
-                (dataframe['adx'] > self.adx_threshold) &
-                (dataframe['rsi'] < 55) &
-                (dataframe['ema_fast'] > dataframe['ema_slow'])
-            ),
-            'enter_long'] = 1
+            (dataframe['close'] > dataframe['vwap']) &
+            (dataframe['adx'] > 20) &
+            (dataframe['plus_di'] > dataframe['minus_di']),
+            'buy'
+        ] = 1
 
-        # === SHORT ===
         dataframe.loc[
-            (
-                (dataframe['close'] < dataframe['vwap'] * 1.002) &
-                (dataframe['minus_di'] > dataframe['plus_di']) &
-                (dataframe['adx'] > self.adx_threshold) &
-                (dataframe['rsi'] > 45) &
-                (dataframe['ema_fast'] < dataframe['ema_slow'])
-            ),
-            'enter_short'] = 1
-
+            (dataframe['close'] < dataframe['vwap']) &
+            (dataframe['adx'] > 20) &
+            (dataframe['minus_di'] > dataframe['plus_di']),
+            'sell'
+        ] = 1
         return dataframe
 
-    # -----------------------------
-    # Exit trend (required for v2026+)
-    # -----------------------------
-    def populate_exit_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-        """
-        Required by Freqtrade >=2025.
-        We're using custom_exit, so just return zeros.
-        """
-        dataframe['exit_long'] = 0
-        dataframe['exit_short'] = 0
+    # --- Exit conditions ---
+    def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        # Exit when price crosses opposite side of VWAP or trend weakens
+        dataframe.loc[
+            (dataframe['close'] < dataframe['vwap']) &
+            (dataframe['plus_di'] < dataframe['minus_di']),
+            'sell'
+        ] = 1
+
+        dataframe.loc[
+            (dataframe['close'] > dataframe['vwap']) &
+            (dataframe['minus_di'] < dataframe['plus_di']),
+            'buy'
+        ] = 1
         return dataframe
-
-    # -----------------------------
-    # Custom stoploss
-    # -----------------------------
-    def custom_stoploss(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
-
-        dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
-        candle = dataframe.iloc[-1]
-        atr = candle['atr']
-
-        if trade.is_short:
-            stop_price = trade.open_rate + (self.atr_multiplier * atr)
-            return (stop_price - current_rate) / current_rate
-        else:
-            stop_price = trade.open_rate - (self.atr_multiplier * atr)
-            return (stop_price - current_rate) / current_rate
-
-    # -----------------------------
-    # Custom exit (TP + early exit for scalping)
-    # -----------------------------
-    def custom_exit(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
-
-        dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
-        candle = dataframe.iloc[-1]
-        atr = candle['atr']
-
-        # --- Take Profit based on RR ratio ---
-        if trade.is_short:
-            risk = (trade.open_rate + (self.atr_multiplier * atr)) - trade.open_rate
-            target = trade.open_rate - (risk * self.rr_ratio)
-            if current_rate <= target:
-                return "tp_hit"
-        else:
-            risk = trade.open_rate - (trade.open_rate - (self.atr_multiplier * atr))
-            target = trade.open_rate + (risk * self.rr_ratio)
-            if current_rate >= target:
-                return "tp_hit"
-
-        # --- Early exit (momentum flip) ---
-        if current_profit > 0.005:  # ~0.5%
-            if trade.is_short and candle['plus_di'] > candle['minus_di']:
-                return "momentum_flip"
-            if not trade.is_short and candle['minus_di'] > candle['plus_di']:
-                return "momentum_flip"
-
-        return None
